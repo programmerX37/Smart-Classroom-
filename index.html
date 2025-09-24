@@ -8,27 +8,31 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <style>
       body {
         font-family: 'Inter', sans-serif;
+        background-color: #09090b; /* zinc-950 */
+        background-image: radial-gradient(circle at 10% 10%, rgba(20, 184, 166, 0.1) 0%, transparent 30%),
+                          radial-gradient(circle at 90% 80%, rgba(52, 211, 153, 0.1) 0%, transparent 40%);
       }
       h1, h2, h3, h4, h5, h6 {
         font-family: 'Poppins', sans-serif;
       }
       /* Custom Scrollbar Styles for Webkit Browsers */
       ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+        width: 6px;
+        height: 6px;
       }
       ::-webkit-scrollbar-track {
-        background: #18181b; /* zinc-900 */
+        background: rgba(10, 10, 12, 0.5); 
       }
       ::-webkit-scrollbar-thumb {
-        background-color: #52525b; /* zinc-600 */
+        background-color: #3f3f46; /* zinc-700 */
         border-radius: 20px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background-color: #71717a; /* zinc-500 */
+        background-color: #52525b; /* zinc-600 */
       }
       .animation-delay-1000 {
         animation-delay: 1s;
@@ -54,7 +58,7 @@
         }
       }
       .animate-blob {
-          animation: blob 7s infinite;
+          animation: blob 10s infinite;
       }
     </style>
   <script type="importmap">
@@ -68,8 +72,8 @@
 }
 </script>
 </head>
-  <body class="bg-zinc-900">
+  <body class="bg-zinc-950">
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
+    <script type="module" src="/src/index.tsx"></script>
   </body>
 </html>

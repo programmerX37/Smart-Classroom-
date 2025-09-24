@@ -1,5 +1,4 @@
 
-// FIX: Import React to resolve 'Cannot find namespace React' error.
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { generateTimetable, processAdminCommand } from '../../../features/generate-timetable';
 import { ScheduleItem } from '../../../entities/schedule';

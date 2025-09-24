@@ -1,5 +1,3 @@
-
-
 import React, { useState, useMemo, useEffect } from 'react';
 import TimetableView from '../../../widgets/timetable';
 import { TIME_SLOTS, DAYS_OF_WEEK } from '../../../shared/config';
@@ -8,7 +6,7 @@ import { ScheduleItem, Conflict, DayOfWeek } from '../../../entities/schedule';
 import { Resource } from '../../../entities/resource';
 import { Department } from '../../../entities/staff';
 import { useAdminConsole } from '../model/useAdminConsole';
-import { Notification } from '../../../entities/notification';
+import { AppEntry } from '../../../entities/app-entry';
 
 
 const GeneratorIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 16v-2m8-8h2M4 12H2m15.364 6.364l1.414 1.414M4.222 4.222l1.414 1.414M18.364 4.222l-1.414 1.414M5.636 18.364l-1.414 1.414M12 16a4 4 0 110-8 4 4 0 010 8z" /></svg>;
@@ -26,7 +24,7 @@ interface AdminConsoleProps {
   updateSchedule: (newSchedule: ScheduleItem[]) => void;
   resources: Resource[];
   setResources: React.Dispatch<React.SetStateAction<Resource[]>>;
-  onCreateNotification: (message: string, type: Notification['type']) => void;
+  onCreateNotification: (message: string, type: 'alert' | 'news') => void;
 }
 
 interface ConflictResolutionModalProps {
@@ -168,7 +166,7 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({ departments, setDepartments
     
     const [conflictingItem, setConflictingItem] = useState<ScheduleItem | null>(null);
     const [notificationMessage, setNotificationMessage] = useState('');
-    const [notificationType, setNotificationType] = useState<Notification['type']>('Info');
+    const [notificationType, setNotificationType] = useState<'alert'>('alert');
 
     const studentGroupsInSchedule = useMemo(() => {
         if (!schedule || schedule.length === 0) return [];
@@ -201,7 +199,7 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({ departments, setDepartments
         if (!notificationMessage.trim()) return;
         onCreateNotification(notificationMessage, notificationType);
         setNotificationMessage('');
-        setNotificationType('Info');
+        setNotificationType('alert');
     };
 
     const filteredSchedule = selectedGroup === 'All Groups'
@@ -211,193 +209,193 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({ departments, setDepartments
     const formInputStyles = "block w-full rounded-3xl bg-zinc-700/50 border border-zinc-600 text-white shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm px-3 py-2 sm:px-4 sm:py-3";
 
     return (
-        <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                 <DashboardCard title="Attendance Status" icon={<AttendanceIcon />} variant="light">
-                    <div className="space-y-4">
-                        <div>
-                            <p className="font-semibold text-emerald-100">Students</p>
-                            <div className="flex justify-between items-center text-sm text-emerald-200"><span>Present: <span className="font-bold text-green-300">480</span></span><span>Absent: <span className="font-bold text-red-400">15</span></span></div>
+        <div className="space-y-6 h-full flex flex-col">
+            <div className="flex-shrink-0 space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <DashboardCard title="Attendance Status" icon={<AttendanceIcon />} variant="light">
+                        <div className="space-y-4">
+                            <div>
+                                <p className="font-semibold text-emerald-100">Students</p>
+                                <div className="flex justify-between items-center text-sm text-emerald-200"><span>Present: <span className="font-bold text-green-300">480</span></span><span>Absent: <span className="font-bold text-red-400">15</span></span></div>
+                            </div>
+                            <hr className="border-emerald-500/20"/>
+                            <div>
+                                <p className="font-semibold text-emerald-100">Teachers</p>
+                                <div className="flex justify-between items-center text-sm text-emerald-200"><span>Present: <span className="font-bold text-green-300">35</span></span><span>Absent: <span className="font-bold text-red-400">2</span></span></div>
+                            </div>
+                            <hr className="border-emerald-500/20"/>
+                            <div>
+                            <p className="font-semibold text-emerald-100">Non-Teaching Staff</p>
+                                <div className="flex justify-between items-center text-sm text-emerald-200"><span>Present: <span className="font-bold text-green-300">22</span></span><span>Absent: <span className="font-bold text-red-400">1</span></span></div>
+                            </div>
                         </div>
-                        <hr className="border-emerald-500/20"/>
-                        <div>
-                            <p className="font-semibold text-emerald-100">Teachers</p>
-                            <div className="flex justify-between items-center text-sm text-emerald-200"><span>Present: <span className="font-bold text-green-300">35</span></span><span>Absent: <span className="font-bold text-red-400">2</span></span></div>
+                    </DashboardCard>
+                    <DashboardCard title="AI Command Center" icon={<AiIcon />} className="lg:col-span-2">
+                        <div className="space-y-3">
+                            <p className="text-sm text-gray-400">
+                                Use natural language to manage the school. The AI will parse your command and perform the required actions, including updating timetable constraints.
+                            </p>
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                                <input
+                                    type="text"
+                                    value={adminCommand}
+                                    onChange={e => setAdminCommand(e.target.value)}
+                                    placeholder="e.g., Create 'AIML' dept..."
+                                    className={`${formInputStyles} flex-grow`}
+                                    disabled={isAiProcessing}
+                                    onKeyDown={(e) => e.key === 'Enter' && handleAdminCommand()}
+                                />
+                                <button 
+                                    onClick={handleAdminCommand} 
+                                    disabled={isAiProcessing || !adminCommand.trim()} 
+                                    className="px-4 py-2 sm:px-6 sm:py-3 bg-emerald-600 text-white font-semibold rounded-3xl hover:bg-emerald-700 disabled:bg-emerald-800/50 disabled:text-gray-400 transition sm:w-32 flex justify-center items-center"
+                                >
+                                    {isAiProcessing ? (
+                                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                    ) : 'Execute'}
+                                </button>
+                            </div>
+                            <p className="text-xs text-gray-500">
+                                <b>Examples:</b> "Add room 607.", "Create Science department.", "Create student group Grade 9.", "Add Prakash to AIML as teaching staff.", "Set class duration to 50 minutes."
+                            </p>
                         </div>
-                        <hr className="border-emerald-500/20"/>
-                        <div>
-                           <p className="font-semibold text-emerald-100">Non-Teaching Staff</p>
-                            <div className="flex justify-between items-center text-sm text-emerald-200"><span>Present: <span className="font-bold text-green-300">22</span></span><span>Absent: <span className="font-bold text-red-400">1</span></span></div>
-                        </div>
-                    </div>
-                </DashboardCard>
-                <DashboardCard title="AI Command Center" icon={<AiIcon />} className="lg:col-span-2">
-                    <div className="space-y-3">
-                        <p className="text-sm text-gray-400">
-                            Use natural language to manage the school. The AI will parse your command and perform the required actions, including updating timetable constraints.
-                        </p>
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
-                            <input
-                                type="text"
-                                value={adminCommand}
-                                onChange={e => setAdminCommand(e.target.value)}
-                                placeholder="e.g., Create 'AIML' dept..."
-                                className={`${formInputStyles} flex-grow`}
-                                disabled={isAiProcessing}
-                                onKeyDown={(e) => e.key === 'Enter' && handleAdminCommand()}
-                            />
-                            <button 
-                                onClick={handleAdminCommand} 
-                                disabled={isAiProcessing || !adminCommand.trim()} 
-                                className="px-4 py-2 sm:px-6 sm:py-3 bg-emerald-600 text-white font-semibold rounded-3xl hover:bg-emerald-700 disabled:bg-emerald-800/50 disabled:text-gray-400 transition sm:w-32 flex justify-center items-center"
-                            >
-                                {isAiProcessing ? (
-                                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                ) : 'Execute'}
-                            </button>
-                        </div>
-                        <p className="text-xs text-gray-500">
-                            <b>Examples:</b> "Add room 607.", "Create Science department.", "Create student group Grade 9.", "Add Prakash to AIML as teaching staff.", "Set class duration to 50 minutes."
-                        </p>
-                    </div>
-                </DashboardCard>
-            </div>
-
-            <DashboardCard title="Create Notification" icon={<NotificationIcon />}>
-                <div className="space-y-4">
-                    <div>
-                        <label htmlFor="notification-message" className="block text-sm font-medium text-gray-300">
-                            Notification Message
-                        </label>
-                        <textarea
-                            id="notification-message"
-                            rows={3}
-                            className={`mt-1 ${formInputStyles}`}
-                            placeholder="e.g., The school will be closed on Monday for a public holiday."
-                            value={notificationMessage}
-                            onChange={(e) => setNotificationMessage(e.target.value)}
-                        ></textarea>
-                    </div>
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
-                        <div className="flex-grow">
-                             <label htmlFor="notification-type" className="block text-sm font-medium text-gray-300">
-                                Alert Level
-                            </label>
-                            <select
-                                id="notification-type"
-                                className={`mt-1 py-2 sm:py-3 pl-4 pr-10 ${formInputStyles} appearance-none`}
-                                value={notificationType}
-                                onChange={(e) => setNotificationType(e.target.value as Notification['type'])}
-                            >
-                                <option>Info</option>
-                                <option>Warning</option>
-                                <option>Urgent</option>
-                            </select>
-                        </div>
-                        <div className="self-end w-full sm:w-auto">
-                            <button
-                                onClick={handleSendNotification}
-                                disabled={!notificationMessage.trim()}
-                                className="w-full sm:w-auto inline-flex justify-center rounded-3xl border border-transparent bg-emerald-600 py-2 sm:py-3 px-6 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-zinc-800 disabled:bg-emerald-800/50 disabled:text-gray-400 transition-colors"
-                            >
-                                Send Notification
-                            </button>
-                        </div>
-                    </div>
+                    </DashboardCard>
                 </div>
-            </DashboardCard>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <DashboardCard title="Timetable Generator" icon={<GeneratorIcon />}>
+                <DashboardCard title="Create Notification" icon={<NotificationIcon />}>
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-300">Constraints & Preferences</label>
-                            <p className="text-xs text-gray-500 mb-1">Use the AI Command Center to add rules here.</p>
+                            <label htmlFor="notification-message" className="block text-sm font-medium text-gray-300">
+                                Notification Message
+                            </label>
                             <textarea
-                                value={constraints}
-                                onChange={(e) => setConstraints(e.target.value)}
-                                rows={8}
-                                className={`w-full mt-1 shadow-sm ${formInputStyles}`}
-                                placeholder="e.g., Physics requires Lab A."
-                            />
+                                id="notification-message"
+                                rows={3}
+                                className={`mt-1 ${formInputStyles}`}
+                                placeholder="e.g., The school will be closed on Monday for a public holiday."
+                                value={notificationMessage}
+                                onChange={(e) => setNotificationMessage(e.target.value)}
+                            ></textarea>
                         </div>
-                        {error && <p className="text-sm text-red-300 bg-red-900/50 p-2 rounded-md">{error}</p>}
-                        <div className="flex space-x-2">
-                            <button
-                                onClick={handleGenerate}
-                                disabled={isLoading}
-                                className="w-full flex-grow justify-center py-2 px-4 sm:py-3 border border-transparent rounded-3xl shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-800/50 disabled:text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-800 focus:ring-emerald-500 flex justify-center items-center"
-                            >
-                                {isLoading ? (
-                                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                ) : 'Generate Draft'}
-                            </button>
-                             <button
-                                onClick={toggleListening}
-                                className={`p-3 rounded-3xl ${isListening ? 'bg-red-500 text-white animate-pulse' : 'bg-zinc-600 text-gray-200 hover:bg-zinc-500'}`}
-                                aria-label="Toggle voice input"
-                            >
-                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-14 0m7 10v-2m0 0a3 3 0 00-3-3H9m6 0a3 3 0 00-3 3h0" /></svg>
-                             </button>
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                            <div className="flex-grow">
+                                <label htmlFor="notification-type" className="block text-sm font-medium text-gray-300">
+                                    Alert Level
+                                </label>
+                                <select
+                                    id="notification-type"
+                                    className={`mt-1 py-2 sm:py-3 pl-4 pr-10 ${formInputStyles} appearance-none`}
+                                    value={notificationType}
+                                    onChange={(e) => setNotificationType(e.target.value as 'alert')}
+                                >
+                                    <option value="alert">Alert</option>
+                                </select>
+                            </div>
+                            <div className="self-end w-full sm:w-auto">
+                                <button
+                                    onClick={handleSendNotification}
+                                    disabled={!notificationMessage.trim()}
+                                    className="w-full sm:w-auto inline-flex justify-center rounded-3xl border border-transparent bg-emerald-600 py-2 sm:py-3 px-6 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-zinc-800 disabled:bg-emerald-800/50 disabled:text-gray-400 transition-colors"
+                                >
+                                    Send Notification
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </DashboardCard>
 
-                <DashboardCard title="School Resources" icon={<ManageIcon />} className="lg:col-span-2">
-                    <div className="space-y-4 max-h-[26rem] overflow-y-auto pr-2">
-                        <div>
-                            <h4 className="font-bold text-lg text-white mb-2">Departments & Staff</h4>
-                            {departments.length === 0 && <p className="text-sm text-gray-500">No departments created yet.</p>}
-                            {departments.map(dept => (
-                                <details key={dept.id} className="p-3 bg-zinc-700/30 rounded-3xl mb-2" open>
-                                    <summary className="font-semibold cursor-pointer list-none flex justify-between text-gray-200">
-                                        <span>{dept.name}</span>
-                                        <span className="text-gray-400 text-sm">
-                                            {dept.teachingStaff.length} T, {dept.nonTeachingStaff.length} NT
-                                        </span>
-                                    </summary>
-                                    <div className="mt-2 pl-4 text-sm text-gray-300">
-                                        <p className="font-semibold">Teaching:</p>
-                                        <ul className="list-disc pl-5">
-                                            {dept.teachingStaff.map(s => <li key={s.id}>{s.name}</li>)}
-                                            {dept.teachingStaff.length === 0 && <li className="text-gray-500 italic">None</li>}
-                                        </ul>
-                                    </div>
-                                </details>
-                            ))}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <DashboardCard title="Timetable Generator" icon={<GeneratorIcon />}>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300">Constraints & Preferences</label>
+                                <p className="text-xs text-gray-500 mb-1">Use the AI Command Center to add rules here.</p>
+                                <textarea
+                                    value={constraints}
+                                    onChange={(e) => setConstraints(e.target.value)}
+                                    rows={8}
+                                    className={`w-full mt-1 shadow-sm ${formInputStyles}`}
+                                    placeholder="e.g., Physics requires Lab A."
+                                />
+                            </div>
+                            {error && <p className="text-sm text-red-300 bg-red-900/50 p-2 rounded-md">{error}</p>}
+                            <div className="flex space-x-2">
+                                <button
+                                    onClick={handleGenerate}
+                                    disabled={isLoading}
+                                    className="w-full flex-grow justify-center py-2 px-4 sm:py-3 border border-transparent rounded-3xl shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-800/50 disabled:text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-800 focus:ring-emerald-500 flex justify-center items-center"
+                                >
+                                    {isLoading ? (
+                                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                    ) : 'Generate Draft'}
+                                </button>
+                                <button
+                                    onClick={toggleListening}
+                                    className={`p-3 rounded-3xl ${isListening ? 'bg-red-500 text-white animate-pulse' : 'bg-zinc-600 text-gray-200 hover:bg-zinc-500'}`}
+                                    aria-label="Toggle voice input"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-14 0m7 10v-2m0 0a3 3 0 00-3-3H9m6 0a3 3 0 00-3 3h0" /></svg>
+                                </button>
+                            </div>
                         </div>
-                        <div className="border-t border-zinc-700 pt-4">
-                            <h4 className="font-bold text-lg text-white mb-2">Rooms</h4>
-                            {resources.filter(r => r.type === 'Room').length === 0 && <p className="text-sm text-gray-500">No rooms created yet.</p>}
-                            <ul className="list-disc pl-5 text-sm text-gray-300 columns-1 sm:columns-2">
-                                {resources.filter(r => r.type === 'Room').map(res => <li key={res.id}>{res.name}{res.capacity ? ` (Cap: ${res.capacity})` : ''}</li>)}
-                            </ul>
+                    </DashboardCard>
+
+                    <DashboardCard title="School Resources" icon={<ManageIcon />} className="lg:col-span-2">
+                        <div className="space-y-4 max-h-[26rem] overflow-y-auto pr-2">
+                            <div>
+                                <h4 className="font-bold text-lg text-white mb-2">Departments & Staff</h4>
+                                {departments.length === 0 && <p className="text-sm text-gray-500">No departments created yet.</p>}
+                                {departments.map(dept => (
+                                    <details key={dept.id} className="p-3 bg-zinc-700/30 rounded-3xl mb-2" open>
+                                        <summary className="font-semibold cursor-pointer list-none flex justify-between text-gray-200">
+                                            <span>{dept.name}</span>
+                                            <span className="text-gray-400 text-sm">
+                                                {dept.teachingStaff.length} T, {dept.nonTeachingStaff.length} NT
+                                            </span>
+                                        </summary>
+                                        <div className="mt-2 pl-4 text-sm text-gray-300">
+                                            <p className="font-semibold">Teaching:</p>
+                                            <ul className="list-disc pl-5">
+                                                {dept.teachingStaff.map(s => <li key={s.id}>{s.name}</li>)}
+                                                {dept.teachingStaff.length === 0 && <li className="text-gray-500 italic">None</li>}
+                                            </ul>
+                                        </div>
+                                    </details>
+                                ))}
+                            </div>
+                            <div className="border-t border-zinc-700 pt-4">
+                                <h4 className="font-bold text-lg text-white mb-2">Rooms</h4>
+                                {resources.filter(r => r.type === 'Room').length === 0 && <p className="text-sm text-gray-500">No rooms created yet.</p>}
+                                <ul className="list-disc pl-5 text-sm text-gray-300 columns-1 sm:columns-2">
+                                    {resources.filter(r => r.type === 'Room').map(res => <li key={res.id}>{res.name}{res.capacity ? ` (Cap: ${res.capacity})` : ''}</li>)}
+                                </ul>
+                            </div>
+                            <div className="border-t border-zinc-700 pt-4">
+                                <h4 className="font-bold text-lg text-white mb-2">Student Groups</h4>
+                                {resources.filter(r => r.type === 'StudentGroup').length === 0 && <p className="text-sm text-gray-500">No student groups created yet.</p>}
+                                <ul className="list-disc pl-5 text-sm text-gray-300 columns-1 sm:columns-2">
+                                    {resources.filter(r => r.type === 'StudentGroup').map(res => <li key={res.id}>{res.name}</li>)}
+                                </ul>
+                            </div>
                         </div>
-                         <div className="border-t border-zinc-700 pt-4">
-                            <h4 className="font-bold text-lg text-white mb-2">Student Groups</h4>
-                            {resources.filter(r => r.type === 'StudentGroup').length === 0 && <p className="text-sm text-gray-500">No student groups created yet.</p>}
-                            <ul className="list-disc pl-5 text-sm text-gray-300 columns-1 sm:columns-2">
-                                {resources.filter(r => r.type === 'StudentGroup').map(res => <li key={res.id}>{res.name}</li>)}
-                            </ul>
-                        </div>
-                    </div>
-                </DashboardCard>
+                    </DashboardCard>
+                </div>
             </div>
             
             {aiSuccess && (
-                <div className="bg-green-500/15 border border-green-500/30 text-green-300 px-4 py-3 rounded-3xl relative" role="alert">
+                <div className="bg-green-500/15 border border-green-500/30 text-green-300 px-4 py-3 rounded-3xl relative flex-shrink-0" role="alert">
                     <strong className="font-bold">AI Assistant: </strong>
                     <span className="block sm:inline">{aiSuccess}</span>
                 </div>
             )}
             {(aiError) && 
-                <div className="bg-red-500/15 border border-red-500/30 text-red-300 px-4 py-3 rounded-3xl relative" role="alert">
+                <div className="bg-red-500/15 border border-red-500/30 text-red-300 px-4 py-3 rounded-3xl relative flex-shrink-0" role="alert">
                     <strong className="font-bold">AI Assistant Error: </strong>
                     <span className="block sm:inline">{aiError}</span>
                     <span className="absolute top-0 bottom-0 right-0 px-4 py-3" onClick={() => setAiError(null)}>
@@ -406,7 +404,7 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({ departments, setDepartments
                 </div>
             }
 
-            <DashboardCard title={`Generated Timetable Draft ${selectedGroup !== 'All Groups' ? `for ${selectedGroup}` : ''}`}>
+            <DashboardCard title={`Generated Timetable Draft ${selectedGroup !== 'All Groups' ? `for ${selectedGroup}` : ''}`} className="flex-grow">
                  <div className="flex flex-col sm:flex-row justify-end items-stretch sm:items-center mb-4 -mt-12">
                      <div>
                         <label htmlFor="admin-group-select" className="sr-only">Select Class</label>
@@ -444,4 +442,4 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({ departments, setDepartments
     );
 };
 
-export default AdminConsole;
+export default React.memo(AdminConsole);
