@@ -1,8 +1,9 @@
 
+
 import { GoogleGenAI, GenerateContentResponse, Type } from "@google/genai";
 import { ScheduleItem, DayOfWeek } from '../../../entities/schedule';
 import { Resource } from '../../../entities/resource';
-import { MOCK_STUDENT_GROUPS, MOCK_SUBJECTS, DAYS_OF_WEEK } from '../../../shared/config';
+import { MOCK_SUBJECTS, DAYS_OF_WEEK } from '../../../shared/config';
 
 
 // Ensure you have the API_KEY in your environment variables
@@ -31,6 +32,7 @@ export const processAdminCommand = async (command: string): Promise<any[]> => {
   - 'create_department': { "action": "create_department", "name": "Department Name" }. You MUST provide the 'name'.
   - 'add_teaching_staff': { "action": "add_teaching_staff", "departmentName": "Department Name", "staffName": "Staff Name" }. You MUST provide both 'departmentName' and 'staffName'.
   - 'create_room': { "action": "create_room", "name": "Room Name", "capacity": 30 }. You MUST provide the 'name'. 'capacity' is an optional integer.
+  - 'create_student_group': { "action": "create_student_group", "name": "Group Name" }. You MUST provide the 'name'.
   - 'set_constraint': { "action": "set_constraint", "detail": "A specific rule for the timetable, e.g., 'class duration is 50 minutes' or 'teacher Prinkya takes 5 classes'" }. You MUST provide the 'detail'.
 
   Return an empty array if the command is unclear. For a command like "Create a science lab with capacity for 25 students and add Mr. Fitz to the Science department", you must return two actions: one to create the room with capacity, and one to add the teacher to the department.`;
@@ -73,6 +75,11 @@ export const generateTimetable = async (constraints: string, resources: Resource
   }
   
   const roomIds = resources.filter(r => r.type === 'Room').map(r => r.id);
+  const studentGroups = resources.filter(r => r.type === 'StudentGroup').map(r => r.name);
+
+  if (studentGroups.length === 0) {
+      throw new Error("Cannot generate schedule: No student groups have been created. Use the AI Command Center to add student groups first (e.g., 'create student group Grade 9').");
+  }
 
   const systemInstruction = `
     You are an expert school timetable scheduler. Your task is to generate a conflict-free weekly class schedule based on a list of teachers, subjects, student groups, rooms, and user-defined constraints.
@@ -84,7 +91,7 @@ export const generateTimetable = async (constraints: string, resources: Resource
     4.  Accurately interpret and apply all user-provided constraints. This is critical. Constraints may include specific class durations (e.g., 50 minutes), specific lunch break times (which should have no classes scheduled), and specific class loads for teachers (e.g., 'teacher X takes 5 classes'). You must calculate the endTime based on the startTime and the specified duration. If no duration is specified, assume 1 hour.
     5.  Ensure all IDs are unique strings.
     6.  The day must be one of: ${DAYS_OF_WEEK.join(', ')}.
-    7.  The studentGroup must be one of: ${MOCK_STUDENT_GROUPS.join(', ')}.
+    7.  The studentGroup must be one of: ${studentGroups.join(', ')}.
     8.  The teacher must be one of: ${teachers.join(', ')}.
     9.  The subject must be one of: ${MOCK_SUBJECTS.join(', ')}.
     10. The roomId must be one of: ${roomIds.join(', ')}.

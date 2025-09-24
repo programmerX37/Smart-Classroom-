@@ -16,7 +16,6 @@ export const MOCK_SCHEDULE: ScheduleItem[] = [];
 export const MOCK_RESOURCES: Resource[] = [];
 
 export const MOCK_TEACHERS: string[] = [];
-export const MOCK_STUDENT_GROUPS = ['Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'];
 export const MOCK_SUBJECTS = ['Algebra II', 'World History', 'Chemistry', 'Physical Ed.', 'English Lit.', 'Physics', 'Calculus', 'Art History'];
 
 

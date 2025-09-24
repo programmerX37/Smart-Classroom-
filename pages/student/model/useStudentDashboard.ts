@@ -1,10 +1,30 @@
 
-import { useState, useMemo } from 'react';
-import { MOCK_STUDENT_GROUPS } from '../../../shared/config';
+
+import { useState, useMemo, useEffect } from 'react';
 import { ScheduleItem } from '../../../entities/schedule';
 
 export const useStudentDashboard = (schedule: ScheduleItem[]) => {
-    const [selectedGroup, setSelectedGroup] = useState<string>(MOCK_STUDENT_GROUPS[0] || '');
+    const studentGroupsInSchedule = useMemo(() => {
+        if (!schedule || schedule.length === 0) return [];
+        const groups = new Set(schedule.map(item => item.studentGroup));
+        return Array.from(groups).sort();
+    }, [schedule]);
+    
+    const [selectedGroup, setSelectedGroup] = useState<string>('');
+
+    useEffect(() => {
+        // When the list of available groups changes...
+        if (studentGroupsInSchedule.length > 0) {
+            // ...if the currently selected group is not in the new list, select the first available one.
+            if (!studentGroupsInSchedule.includes(selectedGroup)) {
+                setSelectedGroup(studentGroupsInSchedule[0]);
+            }
+        } else {
+            // ...if there are no groups, clear the selection.
+            setSelectedGroup('');
+        }
+    }, [studentGroupsInSchedule]);
+
 
     const today = useMemo(() => new Date().toLocaleDateString('en-US', { weekday: 'long' }), []);
 
@@ -19,5 +39,6 @@ export const useStudentDashboard = (schedule: ScheduleItem[]) => {
         setSelectedGroup,
         todaysClasses,
         groupSchedule,
+        studentGroupsInSchedule,
     };
 };

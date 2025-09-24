@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 import { Notification } from '../../../entities/notification';
 
@@ -27,39 +26,38 @@ interface NotificationsPageProps {
     onMarkAllAsRead: () => void;
 }
 
+const getNotificationStyle = (type: Notification['type']): { bg: string; indicator: string; textColor: string; } => {
+    switch (type) {
+        case 'Urgent':
+            return { bg: 'bg-red-500/15', indicator: 'bg-red-400', textColor: 'text-red-100' };
+        case 'Warning':
+            return { bg: 'bg-yellow-500/15', indicator: 'bg-yellow-400', textColor: 'text-yellow-100' };
+        case 'Info':
+        default:
+            return { bg: 'bg-blue-500/15', indicator: 'bg-blue-500', textColor: 'text-blue-100' };
+    }
+};
+
 const NotificationItem: React.FC<{ notification: Notification; onMarkAsRead: (id: string) => void }> = ({ notification, onMarkAsRead }) => {
-    const typeStyles = {
-        Info: {
-            bg: 'bg-white',
-            indicator: 'bg-indigo-500',
-        },
-        Warning: {
-            bg: 'bg-yellow-50',
-            indicator: 'bg-yellow-500',
-        },
-        Urgent: {
-            bg: 'bg-red-50',
-            indicator: 'bg-red-500',
-        }
-    };
+    const baseStyles = getNotificationStyle(notification.type);
 
     const styles = notification.read 
-        ? { bg: 'bg-gray-50', indicator: 'bg-gray-300' }
-        : typeStyles[notification.type];
+        ? { bg: 'bg-zinc-800/50', indicator: 'bg-zinc-600', textColor: 'text-gray-400' }
+        : baseStyles;
 
     return (
-        <div className={`p-4 rounded-lg flex items-start space-x-4 ${styles.bg} ${!notification.read ? 'shadow-sm' : ''}`}>
-            <div className="flex-shrink-0 mt-1">
-                <div className={`h-3 w-3 rounded-full ${styles.indicator}`}></div>
+        <div className={`p-4 rounded-3xl flex items-start space-x-4 ${styles.bg}`}>
+            <div className="flex-shrink-0 mt-1.5">
+                <div className={`h-2.5 w-2.5 rounded-full ${styles.indicator}`}></div>
             </div>
             <div className="flex-grow">
-                <p className={`text-sm ${notification.read ? 'text-gray-500' : 'text-gray-800'}`}>{notification.message}</p>
-                <p className="text-xs text-gray-400 mt-1">{timeAgo(notification.timestamp)}</p>
+                <p className={`text-sm font-medium ${styles.textColor}`}>{notification.message}</p>
+                <p className="text-xs text-gray-500 mt-1">{timeAgo(notification.timestamp)}</p>
             </div>
             {!notification.read && (
                 <button 
                     onClick={() => onMarkAsRead(notification.id)} 
-                    className="text-sm text-indigo-600 hover:text-indigo-800 font-medium flex-shrink-0"
+                    className="text-sm text-emerald-400 hover:text-emerald-300 font-medium flex-shrink-0"
                 >
                     Mark as read
                 </button>
@@ -76,11 +74,11 @@ const NotificationsPage: React.FC<NotificationsPageProps> = ({ notifications, on
     return (
         <div className="max-w-4xl mx-auto">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold text-gray-900">Notifications</h1>
+                <h1 className="text-3xl font-bold text-white">Notifications</h1>
                 {unreadNotifications.length > 0 && (
                     <button 
                         onClick={onMarkAllAsRead}
-                        className="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-md hover:bg-indigo-700 transition"
+                        className="px-5 py-3 bg-emerald-600 text-white text-sm font-semibold rounded-3xl hover:bg-emerald-700 transition"
                     >
                         Mark all as read
                     </button>
@@ -89,29 +87,27 @@ const NotificationsPage: React.FC<NotificationsPageProps> = ({ notifications, on
 
             <div className="space-y-8">
                 <section>
-                    <h2 className="text-lg font-semibold text-gray-700 mb-3">Unread</h2>
+                    <h2 className="text-lg font-semibold text-gray-300 mb-3">Unread</h2>
                     {unreadNotifications.length > 0 ? (
                         <div className="space-y-3">
                             {unreadNotifications.map(n => <NotificationItem key={n.id} notification={n} onMarkAsRead={onMarkAsRead} />)}
                         </div>
                     ) : (
-                        // FIX: Replaced DashboardCard with a styled div as the title prop is required but not applicable for this empty state message.
-                        <div className="bg-white p-4 rounded-xl shadow-md">
-                            <p className="text-center text-gray-500">You're all caught up!</p>
+                        <div className="bg-zinc-800/50 p-6 rounded-3xl shadow-md border border-zinc-700/80">
+                            <p className="text-center text-gray-400">You're all caught up!</p>
                         </div>
                     )}
                 </section>
                 
                 <section>
-                    <h2 className="text-lg font-semibold text-gray-700 mb-3">Read</h2>
+                    <h2 className="text-lg font-semibold text-gray-300 mb-3">Read</h2>
                     {readNotifications.length > 0 ? (
                         <div className="space-y-3">
-                            {readNotifications.map(n => <NotificationItem key={n.id} notification={n} onMarkAsRead={onMarkAsRead} />)}
+                            {readNotifications.slice(0, 10).map(n => <NotificationItem key={n.id} notification={n} onMarkAsRead={onMarkAsRead} />)}
                         </div>
                     ) : (
-                         // FIX: Replaced DashboardCard with a styled div as the title prop is required but not applicable for this empty state message.
-                         <div className="bg-white p-4 rounded-xl shadow-md">
-                            <p className="text-center text-gray-500">No previously read notifications.</p>
+                         <div className="bg-zinc-800/50 p-6 rounded-3xl shadow-md border border-zinc-700/80">
+                            <p className="text-center text-gray-400">No previously read notifications.</p>
                         </div>
                     )}
                 </section>

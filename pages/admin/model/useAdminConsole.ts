@@ -1,5 +1,6 @@
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+// FIX: Import React to resolve 'Cannot find namespace React' error.
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { generateTimetable, processAdminCommand } from '../../../features/generate-timetable';
 import { ScheduleItem } from '../../../entities/schedule';
 import { Resource } from '../../../entities/resource';
@@ -23,6 +24,7 @@ export const useAdminConsole = ({ initialDepartments, onDepartmentsChange, onSch
     const [adminCommand, setAdminCommand] = useState('');
     const [isAiProcessing, setIsAiProcessing] = useState(false);
     const [aiError, setAiError] = useState<string | null>(null);
+    const [aiSuccess, setAiSuccess] = useState<string | null>(null);
 
     const handleGenerate = useCallback(async () => {
         setIsLoading(true);
@@ -47,6 +49,7 @@ export const useAdminConsole = ({ initialDepartments, onDepartmentsChange, onSch
         if (!adminCommand.trim()) return;
         setIsAiProcessing(true);
         setAiError(null);
+        setAiSuccess(null);
         try {
             const actions = await processAdminCommand(adminCommand);
             let updatedDepartments = [...initialDepartments];
@@ -101,6 +104,20 @@ export const useAdminConsole = ({ initialDepartments, onDepartmentsChange, onSch
                             }
                         }
                         break;
+                    case 'create_student_group':
+                        if (action.name) {
+                            if (updatedResources.some(r => r.name.toLowerCase() === action.name.toLowerCase() && r.type === 'StudentGroup')) {
+                                processingErrors.push(`Student group "${action.name}" already exists.`);
+                            } else {
+                                const newGroup: Resource = {
+                                    id: crypto.randomUUID(),
+                                    name: action.name,
+                                    type: 'StudentGroup'
+                                };
+                                updatedResources.push(newGroup);
+                            }
+                        }
+                        break;
                     case 'set_constraint':
                         if (action.detail) {
                             setConstraints(currentConstraints => `${currentConstraints}\n- ${action.detail}`);
@@ -111,6 +128,9 @@ export const useAdminConsole = ({ initialDepartments, onDepartmentsChange, onSch
             
             if (processingErrors.length > 0) {
                 setAiError(processingErrors.join(' '));
+            } else if (actions.length > 0) {
+                 setAiSuccess('Command processed successfully!');
+                 setTimeout(() => setAiSuccess(null), 4000);
             }
 
             onDepartmentsChange(updatedDepartments);
@@ -182,6 +202,7 @@ export const useAdminConsole = ({ initialDepartments, onDepartmentsChange, onSch
         adminCommand, setAdminCommand,
         isAiProcessing,
         aiError, setAiError,
+        aiSuccess,
         handleGenerate,
         handleAdminCommand,
         toggleListening,

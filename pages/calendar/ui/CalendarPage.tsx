@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { CalendarEvent } from '../../../entities/event';
 import { UserRole } from '../../../entities/user';
@@ -27,37 +28,46 @@ const CalendarPage: React.FC<CalendarPageProps> = ({ events, onAddEvent, current
     closeModal,
     calendarGrid,
   } = useCalendar(events, onAddEvent);
+  
+  const formInputStyles = "block w-full rounded-3xl bg-zinc-700/50 border border-zinc-600 text-white shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm px-4 py-3";
+
+  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <DashboardCard title="School Calendar" className="lg:col-span-2">
-            <div className="flex justify-between items-center mb-4">
-                <button onClick={handlePrevMonth} className="px-3 py-1 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">&lt;</button>
-                <h2 className="text-xl font-bold">{currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</h2>
-                <button onClick={handleNextMonth} className="px-3 py-1 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">&gt;</button>
+            <div className="flex justify-between items-center mb-4 -mt-4">
+                <button onClick={handlePrevMonth} className="px-4 py-2 bg-zinc-700 rounded-md hover:bg-zinc-600 transition-colors text-gray-200">&lt;</button>
+                <h2 className="text-lg sm:text-xl font-bold text-white text-center">{currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</h2>
+                <button onClick={handleNextMonth} className="px-4 py-2 bg-zinc-700 rounded-md hover:bg-zinc-600 transition-colors text-gray-200">&gt;</button>
             </div>
-             <div className="grid grid-cols-7 text-center font-semibold mb-2">
-                <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+             <div className="grid grid-cols-7 text-center font-semibold text-gray-400 mb-2 text-xs sm:text-base">
+                {daysOfWeek.map(day => (
+                    <div key={day}>
+                        <span className="hidden md:inline">{day}</span>
+                        <span className="md:hidden">{day.slice(0, 3)}</span>
+                    </div>
+                ))}
              </div>
-             <div className="grid grid-cols-7">
+             <div className="grid grid-cols-7 text-gray-200">
                 {calendarGrid.map(cell => {
                   if (cell.isPadding || !cell.day) {
-                    return <div key={cell.key} className="border p-2 bg-gray-50"></div>;
+                    return <div key={cell.key} className="border border-zinc-700 p-1 sm:p-2 bg-zinc-900/50"></div>;
                   }
                   const { day, isToday, events: dayEvents } = cell.day;
                   return (
                     <div 
                       key={cell.key} 
-                      className={`border p-2 h-32 flex flex-col ${currentRole === UserRole.Admin ? 'cursor-pointer hover:bg-indigo-50' : ''} transition-colors ${isToday ? 'bg-indigo-100' : ''}`}
+                      className={`border border-zinc-700 p-1 sm:p-2 h-20 sm:h-24 md:h-32 flex flex-col ${currentRole === UserRole.Admin ? 'cursor-pointer hover:bg-zinc-700/50' : ''} transition-colors ${isToday ? 'bg-emerald-500/10' : ''}`}
                       onClick={() => currentRole === UserRole.Admin && handleDayClick(day)}
                     >
-                      <div className={`font-semibold ${isToday ? 'text-indigo-600' : ''}`}>{day}</div>
+                      <div className={`text-sm sm:text-base font-semibold ${isToday ? 'text-emerald-300' : ''}`}>{day}</div>
                       <div className="flex-grow overflow-y-auto mt-1 text-xs space-y-1 pr-1">
                         {dayEvents.map(event => (
-                          <div key={event.id} className={`pl-2 pr-1 py-1 rounded ${event.type === 'Exam' ? 'bg-red-100 border-l-4 border-red-500' : 'bg-yellow-100 border-l-4 border-yellow-500'}`}>
-                            <p className="font-semibold truncate text-gray-800">{event.title}</p>
-                            <p className="text-gray-600">{event.time}</p>
+                          <div key={event.id} className={`pl-1 pr-1 py-1 rounded ${event.type === 'Exam' ? 'bg-red-900/50 border-l-2 sm:border-l-4 border-red-500' : 'bg-yellow-900/50 border-l-2 sm:border-l-4 border-yellow-500'}`}>
+                            <p className="font-semibold truncate text-gray-100 text-[10px] sm:text-xs">{event.title}</p>
+                            <p className="text-gray-400 text-[10px] sm:text-xs">{event.time}</p>
                           </div>
                         ))}
                       </div>
@@ -69,41 +79,41 @@ const CalendarPage: React.FC<CalendarPageProps> = ({ events, onAddEvent, current
         <div className="space-y-6">
             <DashboardCard title="Current Time">
                 <div className="text-center">
-                    <p className="text-4xl font-bold">{time.toLocaleTimeString()}</p>
-                    <p className="text-lg text-gray-600">{time.toLocaleDateString('default', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                    <p className="text-4xl font-bold text-white">{time.toLocaleTimeString()}</p>
+                    <p className="text-lg text-gray-400">{time.toLocaleDateString('default', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
                 </div>
             </DashboardCard>
              {currentRole === UserRole.Admin &&
                 <DashboardCard title="Instructions">
-                    <p className="text-sm">Click on any day in the calendar to schedule a new exam or event.</p>
+                    <p className="text-sm text-gray-400">Click on any day in the calendar to schedule a new exam or event.</p>
                 </DashboardCard>
              }
         </div>
       </div>
        {isModalOpen && selectedDate && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
-                    <h3 className="text-lg font-bold mb-4">Add Event for {selectedDate.toLocaleDateString()}</h3>
+            <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4">
+                <div className="bg-zinc-800/80 backdrop-blur-md p-6 rounded-3xl shadow-xl w-full max-w-md border border-zinc-700">
+                    <h3 className="text-lg font-bold text-white mb-4">Add Event for {selectedDate.toLocaleDateString()}</h3>
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium">Title</label>
-                            <input type="text" value={eventTitle} onChange={e => setEventTitle(e.target.value)} className="w-full p-2 border rounded-md" />
+                            <label className="block text-sm font-medium text-gray-300 mb-1">Title</label>
+                            <input type="text" value={eventTitle} onChange={e => setEventTitle(e.target.value)} className={formInputStyles} />
                         </div>
                          <div>
-                            <label className="block text-sm font-medium">Time</label>
-                            <input type="time" value={eventTime} onChange={e => setEventTime(e.target.value)} className="w-full p-2 border rounded-md" />
+                            <label className="block text-sm font-medium text-gray-300 mb-1">Time</label>
+                            <input type="time" value={eventTime} onChange={e => setEventTime(e.target.value)} className={formInputStyles} />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium">Type</label>
-                             <select value={eventType} onChange={e => setEventType(e.target.value as any)} className="w-full p-2 border rounded-md">
+                            <label className="block text-sm font-medium text-gray-300 mb-1">Type</label>
+                             <select value={eventType} onChange={e => setEventType(e.target.value as any)} className={`${formInputStyles} appearance-none`}>
                                 <option value="Event">Event</option>
                                 <option value="Exam">Exam</option>
                              </select>
                         </div>
                     </div>
                     <div className="mt-6 flex justify-end space-x-3">
-                        <button onClick={closeModal} className="px-4 py-2 bg-gray-200 rounded-md">Cancel</button>
-                        <button onClick={handleAddEvent} className="px-4 py-2 bg-indigo-600 text-white rounded-md">Add Event</button>
+                        <button onClick={closeModal} className="px-5 py-3 bg-zinc-600 hover:bg-zinc-500 rounded-3xl text-white font-medium">Cancel</button>
+                        <button onClick={handleAddEvent} className="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-3xl font-medium">Add Event</button>
                     </div>
                 </div>
             </div>
