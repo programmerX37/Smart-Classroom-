@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { AppEntry } from '../../../entities/app-entry';
 import DashboardCard from '../../../shared/ui/card';
@@ -72,7 +70,7 @@ const CreatedEntriesView: React.FC<{ entries: AppEntry[] }> = ({ entries }) => {
     };
 
     return (
-        <DashboardCard title="My Created Entries" className="lg:col-span-2">
+        <DashboardCard title="My Created Entries">
             <div className="flex flex-col h-full">
                 <div className="flex-grow h-48 overflow-y-auto pr-2">
                     {relevantEntries.length > 0 ? (

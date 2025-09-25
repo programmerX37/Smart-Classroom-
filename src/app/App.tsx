@@ -3,6 +3,7 @@ import { UserRole } from '../entities/user';
 import Header from '../widgets/header';
 import { useApp } from './useApp';
 import Sidebar from '../widgets/sidebar';
+import Footer from '../widgets/footer';
 
 // Lazy load pages for better performance
 const StudentDashboard = lazy(() => import('../pages/student'));
@@ -140,7 +141,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="h-screen bg-zinc-950 text-white p-2 sm:p-4 flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-zinc-950 text-white p-2 sm:p-4 pb-8 sm:pb-12 flex flex-col relative">
       <div className="absolute top-0 -left-4 w-72 h-72 bg-emerald-500 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob pointer-events-none z-0"></div>
       <div className="absolute top-0 -right-4 w-96 h-96 bg-green-500 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob animation-delay-2000 pointer-events-none z-0"></div>
       <div className="absolute -bottom-8 left-20 w-80 h-80 bg-emerald-600 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob animation-delay-4000 pointer-events-none z-0"></div>
@@ -176,11 +177,12 @@ const App: React.FC = () => {
                 onNavigateToNotifications={handleNavigateToNotifications}
                 onToggleSidebar={toggleSidebar}
               />
-              <main className="flex-1 overflow-x-hidden overflow-y-auto min-h-0 p-3 sm:p-4 lg:p-6">
+              <main className="flex-1 overflow-x-hidden overflow-y-auto p-3 sm:p-4 lg:p-6">
                 <Suspense fallback={<PageLoader />}>
                   {renderMainContent()}
                 </Suspense>
               </main>
+              <Footer />
             </div>
           </div>
         )}

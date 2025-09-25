@@ -37,6 +37,8 @@ const RoleSwitcher: React.FC<Pick<HeaderProps, 'currentRole' | 'setCurrentRole'>
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="bg-white/5 border border-white/10 text-zinc-200 rounded-full py-2 px-4 sm:px-5 w-32 sm:w-36 flex items-center justify-between cursor-pointer hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:ring-emerald-500 transition-all font-semibold text-sm sm:text-base"
+                aria-haspopup="listbox"
+                aria-expanded={isOpen}
             >
                 <span>{currentRole}</span>
                 <svg
@@ -51,14 +53,17 @@ const RoleSwitcher: React.FC<Pick<HeaderProps, 'currentRole' | 'setCurrentRole'>
             </button>
             {isOpen && (
                 <div className="absolute top-full mt-2 w-36 bg-zinc-900/80 backdrop-blur-xl rounded-2xl shadow-lg z-10 overflow-hidden border border-white/10">
-                    <ul className="text-zinc-200">
+                    <ul className="text-zinc-200" role="listbox">
                         {Object.values(UserRole).map((role) => (
-                            <li 
-                                key={role} 
-                                onClick={() => handleRoleSelect(role)}
-                                className={`px-4 py-2 cursor-pointer transition-colors text-sm sm:text-base ${role === currentRole ? 'bg-emerald-500/20 font-semibold text-emerald-300' : 'hover:bg-zinc-700/50'}`}
-                            >
-                                {role}
+                            <li key={role} role="presentation">
+                                <button
+                                    onClick={() => handleRoleSelect(role)}
+                                    className={`w-full text-left px-4 py-2 cursor-pointer transition-colors text-sm sm:text-base ${role === currentRole ? 'bg-emerald-500/20 font-semibold text-emerald-300' : 'hover:bg-zinc-700/50'}`}
+                                    role="option"
+                                    aria-selected={role === currentRole}
+                                >
+                                    {role}
+                                </button>
                             </li>
                         ))}
                     </ul>

@@ -50,11 +50,21 @@ const ScheduleItemCard: React.FC<{ item: ScheduleItem; conflicts: Conflict[]; on
         `Room ID: ${item.roomId}`,
         ...(hasConflict ? ['', '--- CONFLICTS ---', ...itemConflicts.map(c => c.message)] : [])
     ].join('\n');
+    
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (onClick && (event.key === 'Enter' || event.key === ' ')) {
+            event.preventDefault(); // Prevent space from scrolling the page
+            onClick(item);
+        }
+    };
 
     return (
         <div 
             onClick={() => onClick && onClick(item)}
-            className={`rounded-lg p-2.5 text-xs shadow-md hover:shadow-lg backdrop-blur-sm hover:-translate-y-0.5 transition-all cursor-pointer relative border-l-4 ${color.bg} ${color.border} ${hasConflict ? 'ring-2 ring-red-500/80' : ''}`}
+            onKeyDown={handleKeyDown}
+            tabIndex={onClick ? 0 : -1}
+            role={onClick ? 'button' : undefined}
+            className={`rounded-lg p-2.5 text-xs shadow-md hover:shadow-lg backdrop-blur-sm hover:-translate-y-0.5 transition-all cursor-pointer relative border-l-4 ${color.bg} ${color.border} ${hasConflict ? 'ring-2 ring-red-500/80' : ''} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:ring-emerald-500`}
             title={tooltipText}
         >
             <p className="font-semibold text-zinc-100 text-sm">{item.subject}</p>
@@ -68,8 +78,21 @@ const ScheduleItemCard: React.FC<{ item: ScheduleItem; conflicts: Conflict[]; on
     );
 };
 
-const GridView: React.FC<Omit<TimetableViewProps, 'viewMode'>> = ({ schedule, conflicts, onCellClick, onItemClick }) => (
-    <div className="bg-transparent rounded-lg overflow-auto h-full">
+const GridView: React.FC<Omit<TimetableViewProps, 'viewMode'>> = ({ schedule, conflicts, onCellClick, onItemClick }) => {
+    if (schedule.length === 0) {
+        return (
+            <div className="flex-grow flex flex-col items-center justify-center text-center text-zinc-500 p-8">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mb-4 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <h3 className="text-xl font-semibold text-zinc-300">No Timetable Generated</h3>
+                <p className="mt-2 max-w-md">The schedule is currently empty. An administrator can generate a new timetable draft from the Admin Console.</p>
+            </div>
+        );
+    }
+
+    return (
+    <div className="bg-transparent rounded-lg overflow-auto flex-grow">
         <div className="grid grid-cols-6 min-w-[50rem]">
             {/* Header: Time */}
             <div className="text-center font-semibold p-3 border-b border-r border-white/10 text-zinc-400 sticky top-0 bg-zinc-900/50 backdrop-blur-sm z-10">Time</div>
@@ -112,7 +135,8 @@ const GridView: React.FC<Omit<TimetableViewProps, 'viewMode'>> = ({ schedule, co
             ))}
         </div>
     </div>
-);
+    );
+};
 
 
 const ListView: React.FC<Omit<TimetableViewProps, 'viewMode'>> = ({ schedule, onItemClick, conflicts }) => {
@@ -122,7 +146,7 @@ const ListView: React.FC<Omit<TimetableViewProps, 'viewMode'>> = ({ schedule, on
     }));
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 h-full">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 flex-grow">
             {scheduleByDay.map(({ day, items }) => (
                 <div key={day} className="bg-zinc-900/40 backdrop-blur-lg border border-white/10 text-white rounded-2xl p-4 flex flex-col">
                     <div className="flex items-center justify-between flex-shrink-0">
@@ -143,12 +167,22 @@ const ListView: React.FC<Omit<TimetableViewProps, 'viewMode'>> = ({ schedule, on
                                 `Time: ${item.startTime}`,
                                 ...(hasConflict ? ['', '--- CONFLICTS ---', ...itemConflicts.map(c => c.message)] : [])
                             ].join('\n');
+                            
+                            const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+                                if (onItemClick && (event.key === 'Enter' || event.key === ' ')) {
+                                    event.preventDefault(); // Prevent space from scrolling the page
+                                    onItemClick(item);
+                                }
+                            };
 
                             return (
                                 <div 
                                     key={item.id} 
                                     onClick={() => onItemClick && onItemClick(item)}
-                                    className={`rounded-xl px-3 py-2 text-sm cursor-pointer hover:bg-zinc-700/50 transition-colors border-l-4 relative ${color.border} ${color.bg} ${hasConflict ? 'ring-2 ring-red-500/80' : ''}`}
+                                    onKeyDown={handleKeyDown}
+                                    tabIndex={onItemClick ? 0 : -1}
+                                    role={onItemClick ? 'button' : undefined}
+                                    className={`rounded-xl px-3 py-2 text-sm cursor-pointer hover:bg-zinc-700/50 transition-colors border-l-4 relative ${color.border} ${color.bg} ${hasConflict ? 'ring-2 ring-red-500/80' : ''} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:ring-emerald-500`}
                                     title={tooltipText}
                                 >
                                     <div className="flex items-center justify-between">
@@ -175,10 +209,25 @@ const ListView: React.FC<Omit<TimetableViewProps, 'viewMode'>> = ({ schedule, on
 
 
 const TimetableView: React.FC<TimetableViewProps> = ({ viewMode = 'grid', ...props }) => {
+    // If a specific viewMode is forced to 'list', respect it. The list view is already responsive.
     if (viewMode === 'list') {
         return <ListView {...props} />;
     }
-    return <GridView {...props} />;
+
+    // For the default 'grid' mode, make it responsive by showing ListView on smaller screens.
+    return (
+        <>
+            {/* GridView for large screens (lg and up) - requires horizontal scrolling */}
+            <div className="hidden lg:flex flex-grow min-h-0">
+                <GridView {...props} />
+            </div>
+
+            {/* ListView for small and medium screens (up to lg) - fully responsive */}
+            <div className="lg:hidden flex-grow min-h-0">
+                <ListView {...props} />
+            </div>
+        </>
+    );
 };
 
 export default React.memo(TimetableView);

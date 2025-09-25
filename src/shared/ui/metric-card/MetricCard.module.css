@@ -1,0 +1,88 @@
+/*
+ * Styles for the MetricCard component using CSS Modules.
+ * This approach scopes class names locally to the component, preventing style conflicts.
+ */
+
+.card {
+  background-color: rgba(39, 39, 42, 0.4); /* zinc-800 with transparency */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.5rem; /* 24px */
+  padding: 1.5rem; /* 24px */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* 16px */
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.card:hover {
+  border-color: rgba(20, 184, 166, 0.5); /* emerald-500 with transparency */
+  transform: translateY(-4px);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* 12px */
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #34d399; /* emerald-400 */
+}
+
+/* Ensure the icon itself is sized appropriately, assuming it's an SVG */
+.iconWrapper > svg {
+    width: 1.5rem; /* 24px */
+    height: 1.5rem; /* 24px */
+}
+
+.title {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  color: #d4d4d8; /* zinc-300 */
+  margin: 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem; /* 4px */
+}
+
+.value {
+  font-size: 2.25rem; /* 36px */
+  font-weight: 700;
+  color: #f4f4f5; /* zinc-100 */
+  line-height: 1.2;
+  margin: 0;
+}
+
+.change {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Conditional styling for the change text */
+.positive {
+  color: #4ade80; /* green-400 */
+}
+
+.negative {
+  color: #f87171; /* red-400 */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 640px) {
+  .card {
+    padding: 1rem; /* 16px */
+  }
+
+  .value {
+    font-size: 1.875rem; /* 30px */
+  }
+}

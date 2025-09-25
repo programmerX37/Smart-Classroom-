@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { UserRole } from '../entities/user';
-import { MOCK_SCHEDULE, MOCK_RESOURCES, MOCK_APP_ENTRIES } from '../shared/config';
+import { MOCK_SCHEDULE, MOCK_RESOURCES, MOCK_APP_ENTRIES, MOCK_DEPARTMENTS } from '../shared/config';
 import { Department } from '../entities/staff';
 import { Resource } from '../entities/resource';
 import { CalendarEvent } from '../entities/event';
@@ -52,7 +52,7 @@ export const useApp = () => {
     const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => loadFromLocalStorage('smartScheduler_isAdminLoggedIn', false));
     
     const [departments, setDepartments] = useState<Department[]>(() =>
-        loadFromLocalStorage('smartScheduler_departments', [])
+        loadFromLocalStorage('smartScheduler_departments', MOCK_DEPARTMENTS)
     );
     const [events, setEvents] = useState<CalendarEvent[]>(() =>
         loadFromLocalStorage('smartScheduler_events', [])

@@ -11,9 +11,9 @@ import { AppEntry } from '../../../entities/app-entry';
 
 const GeneratorIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 16v-2m8-8h2M4 12H2m15.364 6.364l1.414 1.414M4.222 4.222l1.414 1.414M18.364 4.222l-1.414 1.414M5.636 18.364l-1.414 1.414M12 16a4 4 0 110-8 4 4 0 010 8z" /></svg>;
 const AttendanceIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>;
-const ManageIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21a6 6 0 00-9-5.197m0 0A5.975 5.975 0 0112 13a5.975 5.975 0 013 5.197M15 21a6 6 0 00-9-5.197" /></svg>;
-const AiIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>;
-const NotificationIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>;
+const ManageIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21a6 6 0 00-9-5.197m0 0A5.975 5.975 0 0112 13a5.975 5.975 0 013 5.197M15 21a6 6 0 00-9-5.197" /></svg>;
+const AiIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>;
+const NotificationIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>;
 
 
 interface AdminConsoleProps {
@@ -208,8 +208,26 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({ departments, setDepartments
     
     const formInputStyles = "block w-full rounded-3xl bg-zinc-700/50 border border-zinc-600 text-white shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm px-3 py-2 sm:px-4 sm:py-3";
 
+    const timetableActions = (
+         <div>
+            <label htmlFor="admin-group-select" className="sr-only">Select Group</label>
+            <select
+                id="admin-group-select"
+                value={selectedGroup}
+                onChange={(e) => setSelectedGroup(e.target.value)}
+                disabled={studentGroupsInSchedule.length === 0}
+                className="bg-zinc-700/50 border border-zinc-600 text-white rounded-3xl py-2 px-4 appearance-none pr-10 cursor-pointer focus:ring-2 focus:ring-emerald-500 outline-none disabled:bg-zinc-800 disabled:cursor-not-allowed"
+            >
+                <option value="All Groups">All Groups</option>
+                {studentGroupsInSchedule.map(group => (
+                    <option key={group} value={group}>{group}</option>
+                ))}
+            </select>
+        </div>
+    );
+
     return (
-        <div className="space-y-6 h-full flex flex-col">
+        <div className="space-y-6">
             <div className="flex-shrink-0 space-y-6">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <DashboardCard title="Attendance Status" icon={<AttendanceIcon />} variant="light">
@@ -307,7 +325,30 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({ departments, setDepartments
                     </div>
                 </DashboardCard>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <DashboardCard title="Broadcast Message" icon={<NotificationIcon />}>
+                    <div className="space-y-4">
+                        <div>
+                            <label htmlFor="broadcast-message" className="block text-sm font-medium text-gray-300">
+                                Broadcast Message
+                            </label>
+                            <textarea
+                                id="broadcast-message"
+                                rows={3}
+                                className={`mt-1 ${formInputStyles}`}
+                                placeholder="e.g., Reminder: Parent-teacher meetings are this Friday."
+                            ></textarea>
+                        </div>
+                        <div className="flex justify-end">
+                            <button
+                                className="inline-flex justify-center rounded-3xl border border-transparent bg-emerald-600 py-2 sm:py-3 px-6 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-zinc-800"
+                            >
+                                Broadcast
+                            </button>
+                        </div>
+                    </div>
+                </DashboardCard>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <DashboardCard title="Timetable Generator" icon={<GeneratorIcon />}>
                         <div className="space-y-4">
                             <div>
@@ -346,7 +387,7 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({ departments, setDepartments
                         </div>
                     </DashboardCard>
 
-                    <DashboardCard title="School Resources" icon={<ManageIcon />} className="lg:col-span-2">
+                    <DashboardCard title="School Resources" icon={<ManageIcon />} className="md:col-span-2">
                         <div className="space-y-4 max-h-[26rem] overflow-y-auto pr-2">
                             <div>
                                 <h4 className="font-bold text-lg text-white mb-2">Departments & Staff</h4>
@@ -404,24 +445,11 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({ departments, setDepartments
                 </div>
             }
 
-            <DashboardCard title={`Generated Timetable Draft ${selectedGroup !== 'All Groups' ? `for ${selectedGroup}` : ''}`} className="flex-grow">
-                 <div className="flex flex-col sm:flex-row justify-end items-stretch sm:items-center mb-4 -mt-12">
-                     <div>
-                        <label htmlFor="admin-group-select" className="sr-only">Select Class</label>
-                        <select
-                            id="admin-group-select"
-                            value={selectedGroup}
-                            onChange={(e) => setSelectedGroup(e.target.value)}
-                            disabled={studentGroupsInSchedule.length === 0}
-                            className="bg-zinc-700/50 border border-zinc-600 text-white rounded-3xl py-3 px-5 appearance-none pr-10 cursor-pointer focus:ring-2 focus:ring-emerald-500 outline-none disabled:bg-zinc-800 disabled:cursor-not-allowed w-full"
-                        >
-                            <option value="All Groups">All Groups</option>
-                            {studentGroupsInSchedule.map(group => (
-                                <option key={group} value={group}>{group}</option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
+            <DashboardCard 
+                title={`Generated Timetable Draft ${selectedGroup !== 'All Groups' ? `for ${selectedGroup}` : ''}`} 
+                actions={timetableActions}
+                className="[&>div:last-child]:flex-grow-0"
+            >
                 <TimetableView 
                     schedule={filteredSchedule} 
                     conflicts={conflicts}

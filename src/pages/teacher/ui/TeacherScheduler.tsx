@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import TimetableView from '../../../widgets/timetable';
 import { ScheduleItem, Conflict } from '../../../entities/schedule';
 import DashboardCard from '../../../shared/ui/card';
-import ConflictDetailsModal from '../../../widgets/timetable/ui/ConflictDetailsModal';
+import { ConflictDetailsModal } from '../../../widgets/timetable';
 import { Resource } from '../../../entities/resource';
 import NewsViewerModal from '../../../widgets/news-viewer';
 import TeacherActionsModal from '../../../widgets/teacher-actions';
@@ -139,7 +139,7 @@ const TeacherScheduler: React.FC<TeacherSchedulerProps> = ({ teacherName, schedu
   };
 
   return (
-    <div className="space-y-6 h-full flex flex-col">
+    <div className="space-y-6">
        <div className="flex-shrink-0">
             <div className="flex items-center gap-4">
                 <h1 className="text-3xl md:text-4xl font-semibold text-white">Hi, {teacherName}</h1>
@@ -155,7 +155,7 @@ const TeacherScheduler: React.FC<TeacherSchedulerProps> = ({ teacherName, schedu
             <p className="text-gray-400 mt-1">Here’s your teaching dashboard.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-shrink-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-shrink-0">
             <DashboardCard title="Attendance Monitoring" icon={<ChartBarIcon />} variant="light">
                 <AttendanceMonitorChart studentGroups={studentGroups} />
             </DashboardCard>
@@ -165,12 +165,10 @@ const TeacherScheduler: React.FC<TeacherSchedulerProps> = ({ teacherName, schedu
             <DashboardCard title="Alerts & News" icon={<BellIcon />} variant="light">
                 <AlertsList entries={appEntries} onNewsClick={handleNewsClick} />
             </DashboardCard>
-            
             <CreatedEntriesView entries={appEntries} />
-
         </div>
 
-      <DashboardCard title="My Weekly Schedule" className="flex-grow">
+      <DashboardCard title="My Weekly Schedule">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
             <p className="text-sm text-gray-400">Click a class with a conflict to view details.</p>
         </div>

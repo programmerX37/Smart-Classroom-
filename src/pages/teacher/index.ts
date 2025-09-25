@@ -1,2 +1,5 @@
-export { default } from './ui/TeacherScheduler';
-export { default as TeacherLoginPage } from './ui/TeacherLoginPage';
+import TeacherScheduler from './ui/TeacherScheduler';
+import TeacherLoginPage from './ui/TeacherLoginPage';
+
+export { TeacherScheduler, TeacherLoginPage };
+export default TeacherScheduler;

@@ -3,7 +3,7 @@ import DashboardCard from '../../../shared/ui/card';
 import TimetableView from '../../../widgets/timetable';
 import { ScheduleItem, Conflict } from '../../../entities/schedule';
 import { useStudentDashboard } from '../model/useStudentDashboard';
-import ConflictDetailsModal from '../../../widgets/timetable/ui/ConflictDetailsModal';
+import { ConflictDetailsModal } from '../../../widgets/timetable';
 import { AppEntry } from '../../../entities/app-entry';
 
 
@@ -114,7 +114,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ studentGroup, sched
   };
 
   return (
-    <div className="space-y-6 h-full flex flex-col">
+    <div className="space-y-6">
        <div className="flex-shrink-0">
             <h1 className="text-3xl md:text-4xl font-semibold text-white">Welcome, {studentGroup}</h1>
             <p className="text-gray-400 mt-1">Here’s your dashboard overview.</p>
@@ -148,7 +148,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ studentGroup, sched
         </DashboardCard>
       </div>
 
-      <DashboardCard title={`Weekly Timetable for ${studentGroup}`} className="flex-grow">
+      <DashboardCard title={`Weekly Timetable for ${studentGroup}`}>
         <TimetableView
           schedule={groupSchedule}
           conflicts={conflicts}

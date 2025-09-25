@@ -1,4 +1,5 @@
+import StudentDashboard from './ui/StudentDashboard';
+import StudentLoginPage from './ui/StudentLoginPage';
 
-
-export { default } from './ui/StudentDashboard';
-export { default as StudentLoginPage } from './ui/StudentLoginPage';
+export { StudentDashboard, StudentLoginPage };
+export default StudentDashboard;
