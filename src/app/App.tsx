@@ -151,7 +151,7 @@ const App: React.FC = () => {
         {currentView === 'home' ? (
           <HomePage onSelectRole={handleRoleSelect} />
         ) : (
-          <div className="flex flex-1 gap-4 relative z-10 min-h-0">
+          <div className="flex flex-1 gap-4 relative z-10">
             {/* Backdrop for mobile sidebar */}
              {isSidebarOpen && (
               <div 
@@ -169,7 +169,7 @@ const App: React.FC = () => {
               isOpen={isSidebarOpen}
               onClose={toggleSidebar}
             />
-            <div className="flex-1 flex flex-col min-h-0 bg-black/20 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/20">
+            <div className="flex-1 flex flex-col bg-black/20 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/20">
               <Header
                 currentRole={currentRole}
                 setCurrentRole={handleSetCurrentRole}
@@ -177,7 +177,7 @@ const App: React.FC = () => {
                 onNavigateToNotifications={handleNavigateToNotifications}
                 onToggleSidebar={toggleSidebar}
               />
-              <main className="flex-1 overflow-x-hidden overflow-y-auto p-3 sm:p-4 lg:p-6">
+              <main className="flex-1 overflow-x-hidden p-3 sm:p-4 lg:p-6">
                 <Suspense fallback={<PageLoader />}>
                   {renderMainContent()}
                 </Suspense>
